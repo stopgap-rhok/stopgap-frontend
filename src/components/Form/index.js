@@ -29,7 +29,7 @@ const userSchema = {
 };
 
 const imageSchema = {
-  attachments: t.ArrayType().isRequired("nteisranteiosran"),
+  attachments: t.ArrayType(),
 };
 
 const schema = Schema.Model({

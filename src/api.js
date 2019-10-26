@@ -17,9 +17,11 @@ export async function submitReport(data) {
     fd.set("userEmail", data.user.email);
   }
   fd.set("userIsOwner", data.userIsOwner);
-  data.image.attachments.forEach(file => {
-    fd.append("attachments[]", file.blobFile, file.name);
-  });
+  if (data.image.attachments) {
+    data.image.attachments.forEach(file => {
+      fd.append("attachments[]", file.blobFile, file.name);
+    });
+  }
 
   await post(endpoints.NEW_REPORT, fd);
 }
