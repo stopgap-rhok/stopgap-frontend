@@ -6,8 +6,10 @@ import {
   FormGroup,
   FormControl,
   ControlLabel,
+  Checkbox,
+  CheckboxGroup,
   Button,
-  HelpBlock,
+  Uploader,
 } from "rsuite";
 
 import styles from "./css/Form.module.scss";
@@ -17,12 +19,17 @@ const t = Schema.Types;
 const businessSchema = {
   name: t.StringType().isRequired("Business name is required"),
   address: t.StringType().isRequired("Business address is required"),
+  details: t.StringType(),
 };
 
 const userSchema = {
+  name: t.StringType(),
   email: t.StringType().isEmail("Invalid email address"),
-  spokenToBusiness: t.BooleanType().isRequired(),
-  mentionedStopgap: t.BooleanType().isRequired(),
+  // confirmations: t.ArrayType(),
+};
+
+const imageSchema = {
+  attachments: t.ArrayType().isRequired("nteisranteiosran"),
 };
 
 const schema = Schema.Model({
@@ -34,10 +41,14 @@ const schema = Schema.Model({
     .ObjectType()
     .shape(userSchema)
     .isRequired(),
+  image: t
+    .ObjectType()
+    .shape(imageSchema)
+    .isRequired(),
   extraInfo: t.StringType(),
 });
 
-const stepNames = ["BUSINESS_INFO", "USER_INFO"];
+const stepNames = ["BUSINESS_INFO", "USER_INFO", "IMAGE"];
 
 const steps = stepNames.reduce((acc, name, i) => ({ ...acc, [name]: i }), {});
 
@@ -54,9 +65,15 @@ function previousStep(currentStep) {
   return currentStep - 1;
 }
 
-export default function Form(props) {
+export default function Form({ onSubmit }) {
   const [step, setStep] = useState(firstStep);
-  const [state, setState] = useState({});
+  const [state, setState] = useState({
+    metRequirements: [],
+    userIsOwner: false,
+    image: {},
+    user: {},
+    business: {},
+  });
 
   function updater(name) {
     return function update(value) {
@@ -65,7 +82,11 @@ export default function Form(props) {
   }
 
   function next(currentStep) {
-    setStep(nextStep(currentStep));
+    if (currentStep === lastStep) {
+      onSubmit(state);
+    } else {
+      setStep(nextStep(currentStep));
+    }
   }
 
   function back(currentStep) {
@@ -89,6 +110,14 @@ export default function Form(props) {
         <UserForm
           value={state.user}
           onChange={updater("user")}
+          onSubmit={next}
+          goBack={back}
+        />
+      )}
+      {step === steps.IMAGE && (
+        <ImageForm
+          value={state.image}
+          onChange={updater("image")}
           onSubmit={next}
           goBack={back}
         />
@@ -142,10 +171,44 @@ function UserForm({ goBack, value, onChange, onSubmit }) {
       </FormGroup>
       <FormGroup>
         <ControlLabel>
-          Address
-          <FormControl name="address" />
+          Email
+          <FormControl name="email" />
         </ControlLabel>
       </FormGroup>
+      {/*<FormGroup>
+        <FormControl accepter={CheckboxGroup} name="confirmations">
+          <Checkbox value="spokenToBusiness">
+            Have you spoken to the business about ?
+          </Checkbox>
+          <Checkbox value="mentionedStopgap">
+            Have you spoken to the business about StopGap?
+          </Checkbox>
+        </FormControl>
+        </FormGroup>*/}
+    </StepForm>
+  );
+}
+
+function ImageForm({ goBack, value, onChange, onSubmit }) {
+  return (
+    <StepForm
+      heading="IMage"
+      schema={imageSchema}
+      step={steps.IMAGE}
+      onSubmit={onSubmit}
+      onChange={onChange}
+      value={value}
+      goBack={goBack}
+    >
+      <FormControl
+        accepter={Uploader}
+        accept="image/*"
+        listType="picture"
+        multiple
+        name="attachments"
+        autoUpload={false}
+        removable
+      />
     </StepForm>
   );
 }
@@ -161,10 +224,7 @@ function StepForm({
   heading,
 }) {
   const form = useRef(null);
-  const schemuh = useMemo(() => {
-    debugger;
-    return Schema.Model(schema);
-  }, [schema]);
+  const schemuh = useMemo(() => Schema.Model(schema), [schema]);
 
   function submit(e) {
     e.preventDefault();

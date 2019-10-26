@@ -34,15 +34,29 @@ export function get(urlString, params = {}) {
   return fetch(url);
 }
 
+export function formdataAppendObject(fd, obj) {
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === "object") {
+      formdataAppendObject(fd, value);
+    } else {
+      fd.set(key, value);
+    }
+  }
+}
+
 /**
  * Make a POST request
+ *
+ * @param {string} url - The URL to send the form data to
+ * @param {FormData} body - The data to include in the request
+ * @returns {Promise}
  */
 export function post(url, body) {
   return fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "multipart/form-data",
     },
-    body: JSON.stringify(body),
+    body,
   });
 }
