@@ -1,0 +1,11 @@
+@import "src/css/index.scss";
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submit {
+  margin-left: auto;
+}
