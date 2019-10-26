@@ -5,9 +5,12 @@ import {
   Form as RForm,
   FormGroup,
   FormControl,
+  Icon,
   ControlLabel,
   Checkbox,
   CheckboxGroup,
+  Radio,
+  RadioGroup,
   Button,
   Uploader,
 } from "rsuite";
@@ -16,30 +19,48 @@ import styles from "./css/Form.module.scss";
 
 const t = Schema.Types;
 
+const environmentSchema = {
+  singleStep: t.BooleanType().isRequired("This field is required"),
+  nonResidential: t.BooleanType().isRequired("This field is required"),
+};
+
 const businessSchema = {
   name: t.StringType().isRequired("Business name is required"),
   address: t.StringType().isRequired("Business address is required"),
-  details: t.StringType(),
-};
-
-const userSchema = {
-  name: t.StringType(),
-  email: t.StringType().isEmail("Invalid email address"),
-  // confirmations: t.ArrayType(),
+  userIsOwner: t.BooleanType().isRequired("This field is required"),
 };
 
 const imageSchema = {
   attachments: t.ArrayType(),
 };
 
+const additionInfoSchema = {
+  sidewalkFlat: t.BooleanType(),
+  stepIsWide: t.BooleanType(),
+  correctHeight: t.BooleanType(),
+};
+
+const contactSchema = {
+  canContact: t.BooleanType().isRequired("This field is required"),
+  email: t.StringType().isEmail("Invalid email address"),
+};
+
 const schema = Schema.Model({
+  environment: t
+    .ObjectType()
+    .shape(environmentSchema)
+    .isRequired(),
   business: t
     .ObjectType()
     .shape(businessSchema)
     .isRequired(),
-  user: t
+  contact: t
     .ObjectType()
-    .shape(userSchema)
+    .shape(contactSchema)
+    .isRequired(),
+  info: t
+    .ObjectType()
+    .shape(additionInfoSchema)
     .isRequired(),
   image: t
     .ObjectType()
@@ -48,7 +69,13 @@ const schema = Schema.Model({
   extraInfo: t.StringType(),
 });
 
-const stepNames = ["BUSINESS_INFO", "USER_INFO", "IMAGE"];
+const stepNames = [
+  "ENVIRONMENT_INFO",
+  "BUSINESS_INFO",
+  "IMAGE",
+  "ADDITIONAL_INFO",
+  "CONTACT_INFO",
+];
 
 const steps = stepNames.reduce((acc, name, i) => ({ ...acc, [name]: i }), {});
 
@@ -67,13 +94,7 @@ function previousStep(currentStep) {
 
 export default function Form({ onSubmit }) {
   const [step, setStep] = useState(firstStep);
-  const [state, setState] = useState({
-    metRequirements: [],
-    userIsOwner: false,
-    image: {},
-    user: {},
-    business: {},
-  });
+  const [state, setState] = useState({});
 
   function updater(name) {
     return function update(value) {
@@ -82,6 +103,7 @@ export default function Form({ onSubmit }) {
   }
 
   function next(currentStep) {
+    console.log("hello", currentStep, firstStep, lastStep);
     if (currentStep === lastStep) {
       onSubmit(state);
     } else {
@@ -98,18 +120,18 @@ export default function Form({ onSubmit }) {
       <pre>
         <code>{JSON.stringify(state, null, 2)}</code>
       </pre>
-      {step === steps.BUSINESS_INFO && (
-        <BusinessInfoForm
-          value={state.business}
-          onChange={updater("business")}
+      {step === steps.ENVIRONMENT_INFO && (
+        <EnvironmentInfoForm
+          value={state.environment}
+          onChange={updater("environment")}
           onSubmit={next}
           goBack={back}
         />
       )}
-      {step === steps.USER_INFO && (
-        <UserForm
-          value={state.user}
-          onChange={updater("user")}
+      {step === steps.BUSINESS_INFO && (
+        <BusinessInfoForm
+          value={state.business}
+          onChange={updater("business")}
           onSubmit={next}
           goBack={back}
         />
@@ -122,9 +144,57 @@ export default function Form({ onSubmit }) {
           goBack={back}
         />
       )}
+      {step === steps.ADDITIONAL_INFO && (
+        <AdditionalInfoForm
+          value={state.additional}
+          onChange={updater("additional")}
+          onSubmit={next}
+          goBack={back}
+        />
+      )}
+      {step === steps.CONTACT_INFO && (
+        <ContactForm
+          value={state.contact}
+          onChange={updater("contact")}
+          onSubmit={next}
+          goBack={back}
+        />
+      )}
     </>
   );
 }
+
+function YesOrNo({ children, ...props }) {
+  return (
+    <FormGroup>
+      {children}
+      <FormControl accepter={RadioGroup} {...props}>
+        <Radio value={true}>Yes</Radio>
+        <Radio value={false}>No</Radio>
+      </FormControl>
+    </FormGroup>
+  );
+}
+
+function EnvironmentInfoForm({ goBack, value, onChange, onSubmit }) {
+  return (
+    <StepForm
+      schema={environmentSchema}
+      value={value}
+      onChange={onChange}
+      onSubmit={onSubmit}
+      step={steps.ENVIRONMENT_INFO}
+      goBack={goBack}
+      heading="Environment stuff"
+    >
+      <YesOrNo name="singleStep">
+        Is the location inaccessible due to a single step?
+      </YesOrNo>
+      <YesOrNo name="nonResidential">Is the location non-residential?</YesOrNo>
+    </StepForm>
+  );
+}
+
 function BusinessInfoForm({ goBack, value, onChange, onSubmit }) {
   return (
     <StepForm
@@ -138,7 +208,7 @@ function BusinessInfoForm({ goBack, value, onChange, onSubmit }) {
     >
       <FormGroup>
         <ControlLabel>
-          Name
+          Business name
           <FormControl name="name" />
         </ControlLabel>
       </FormGroup>
@@ -148,43 +218,53 @@ function BusinessInfoForm({ goBack, value, onChange, onSubmit }) {
           <FormControl name="address" />
         </ControlLabel>
       </FormGroup>
+      <YesOrNo name="userIsOwner">Are you the owner of this business?</YesOrNo>
     </StepForm>
   );
 }
 
-function UserForm({ goBack, value, onChange, onSubmit }) {
+function AdditionalInfoForm({ goBack, value, onChange, onSubmit }) {
   return (
     <StepForm
-      schema={userSchema}
+      schema={additionInfoSchema}
       value={value}
       onChange={onChange}
       onSubmit={onSubmit}
-      step={steps.USER_INFO}
+      step={steps.ADDITIONAL_INFO}
       goBack={goBack}
-      heading="User Information"
+      heading="Additional Information"
     >
+      <YesOrNo name="sidewalkFlat">Is the sidewalk flat?</YesOrNo>
+      <YesOrNo name="stepIsWide">Is the step 34 inches or wider?</YesOrNo>
+      <YesOrNo name="correctHeight">
+        Is the step taller than 2 inches and shorter than 9 inches?
+      </YesOrNo>
+    </StepForm>
+  );
+}
+
+function ContactForm({ isOwner, goBack, value, onChange, onSubmit }) {
+  return (
+    <StepForm
+      schema={contactSchema}
+      value={value}
+      onChange={onChange}
+      onSubmit={onSubmit}
+      step={steps.CONTACT_INFO}
+      goBack={goBack}
+      heading="Contact Information"
+    >
+      {isOwner || (
+        <YesOrNo name="canContact">
+          Can we contact you about this request?
+        </YesOrNo>
+      )}
       <FormGroup>
         <ControlLabel>
-          Name
-          <FormControl name="name" />
-        </ControlLabel>
-      </FormGroup>
-      <FormGroup>
-        <ControlLabel>
-          Email
+          Email address
           <FormControl name="email" />
         </ControlLabel>
       </FormGroup>
-      {/*<FormGroup>
-        <FormControl accepter={CheckboxGroup} name="confirmations">
-          <Checkbox value="spokenToBusiness">
-            Have you spoken to the business about ?
-          </Checkbox>
-          <Checkbox value="mentionedStopgap">
-            Have you spoken to the business about StopGap?
-          </Checkbox>
-        </FormControl>
-        </FormGroup>*/}
     </StepForm>
   );
 }
@@ -208,7 +288,11 @@ function ImageForm({ goBack, value, onChange, onSubmit }) {
         name="attachments"
         autoUpload={false}
         removable
-      />
+      >
+        <button type="button">
+          <Icon icon="camera-retro" size="lg" />
+        </button>
+      </FormControl>
     </StepForm>
   );
 }
