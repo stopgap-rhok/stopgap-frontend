@@ -26,10 +26,12 @@ export async function submitReport(data) {
     rawBody.userEmail = data.user.email;
   }
   fd.set("userIsOwner", data.userIsOwner);
-  data.image.attachments.forEach(file => {
-    fd.append("attachments", file.blobFile, file.name);
-    rawBody.attachments.push(file);
-  });
+  if (data.image.attachments) {
+    data.image.attachments.forEach(file => {
+      fd.append("attachments", file.blobFile, file.name);
+      rawBody.attachments.push(file);
+    });
+  }
 
   await post(endpoints.NEW_REPORT, fd, rawBody);
 }
