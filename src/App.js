@@ -3,6 +3,7 @@ import { Container, Header, Content } from "rsuite";
 
 import StoreProvider from "./store";
 import Form from "./components/Form";
+import Query from "./components/Query";
 import { submitReport } from "./api";
 
 import "rsuite/dist/styles/rsuite-default.css";
@@ -15,9 +16,7 @@ function App() {
         <Header className={styles.header}>
           <h1 className={styles.heading}>StopGap</h1>
         </Header>
-        <Content className={styles.body}>
-          <Form onSubmit={submitReport} />
-        </Content>
+        <Query />
       </Container>
     </StoreProvider>
   );
