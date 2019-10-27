@@ -41,7 +41,11 @@ self.addEventListener("sync", function(event) {
 self.addEventListener("fetch", function(event) {
   const req = event.request.clone();
 
-  if (req.method === "GET") {
+  if (
+    req.method === "GET" &&
+    req.url !==
+      "https://us-east4-rhok11-stopgap.cloudfunctions.net/getAllRampRequests"
+  ) {
     event.respondWith(
       caches.open("mysite-dynamic").then(function(cache) {
         return cache.match(event.request).then(function(response) {
