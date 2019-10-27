@@ -68,6 +68,7 @@ function previousStep(currentStep) {
 export default function Form({ onSubmit }) {
   const [step, setStep] = useState(firstStep);
   const [state, setState] = useState({});
+  const [disabled, setDisabled] = useState(false);
 
   function updater(name) {
     return function update(value) {
@@ -77,6 +78,7 @@ export default function Form({ onSubmit }) {
 
   function next(currentStep) {
     if (currentStep === lastStep) {
+      setDisabled(true);
       onSubmit(state);
     } else {
       setStep(nextStep(currentStep));
@@ -91,6 +93,7 @@ export default function Form({ onSubmit }) {
     <>
       {step === steps.ENVIRONMENT_INFO && (
         <EnvironmentInfoForm
+          disabled={disabled}
           value={state.environment}
           onChange={updater("environment")}
           onSubmit={next}
@@ -99,6 +102,7 @@ export default function Form({ onSubmit }) {
       )}
       {step === steps.BUSINESS_INFO && (
         <BusinessInfoForm
+          disabled={disabled}
           value={state.business}
           onChange={updater("business")}
           onSubmit={next}
@@ -108,6 +112,7 @@ export default function Form({ onSubmit }) {
       {step === steps.IMAGE && (
         <ImageForm
           value={state.image}
+          disabled={disabled}
           onChange={updater("image")}
           onSubmit={next}
           goBack={back}
@@ -116,6 +121,7 @@ export default function Form({ onSubmit }) {
       {step === steps.ADDITIONAL_INFO && (
         <AdditionalInfoForm
           value={state.additional}
+          disabled={disabled}
           onChange={updater("additional")}
           onSubmit={next}
           goBack={back}
@@ -124,6 +130,7 @@ export default function Form({ onSubmit }) {
       {step === steps.CONTACT_INFO && (
         <ContactForm
           isOwner={state.business.userIsOwner}
+          disabled={disabled}
           value={state.contact}
           onChange={updater("contact")}
           onSubmit={next}
@@ -154,7 +161,7 @@ function YesOrNo({ children, className, ...props }) {
   );
 }
 
-function EnvironmentInfoForm({ goBack, value, onChange, onSubmit }) {
+function EnvironmentInfoForm({ disabled, goBack, value, onChange, onSubmit }) {
   return (
     <StepForm
       schema={environmentSchema}
@@ -163,6 +170,7 @@ function EnvironmentInfoForm({ goBack, value, onChange, onSubmit }) {
       onSubmit={onSubmit}
       step={steps.ENVIRONMENT_INFO}
       goBack={goBack}
+      disabled={disabled}
       heading="Tell us about an Ottawa business that could use a StopGap ramp."
     >
       <YesOrNo name="singleStep">
@@ -173,11 +181,12 @@ function EnvironmentInfoForm({ goBack, value, onChange, onSubmit }) {
   );
 }
 
-function BusinessInfoForm({ goBack, value, onChange, onSubmit }) {
+function BusinessInfoForm({ disabled, goBack, value, onChange, onSubmit }) {
   return (
     <StepForm
       schema={businessSchema}
       value={value}
+      disabled={disabled}
       onChange={onChange}
       onSubmit={onSubmit}
       step={steps.BUSINESS_INFO}
@@ -202,13 +211,14 @@ function BusinessInfoForm({ goBack, value, onChange, onSubmit }) {
   );
 }
 
-function AdditionalInfoForm({ goBack, value, onChange, onSubmit }) {
+function AdditionalInfoForm({ disabled, goBack, value, onChange, onSubmit }) {
   return (
     <div className={styles.additionInfo}>
       <StepForm
         schema={additionInfoSchema}
         value={value}
         onChange={onChange}
+        disabled={disabled}
         onSubmit={onSubmit}
         step={steps.ADDITIONAL_INFO}
         goBack={goBack}
@@ -224,9 +234,10 @@ function AdditionalInfoForm({ goBack, value, onChange, onSubmit }) {
   );
 }
 
-function ContactForm({ isOwner, goBack, value, onChange, onSubmit }) {
+function ContactForm({ disabled, isOwner, goBack, value, onChange, onSubmit }) {
   return (
     <StepForm
+      disabled={disabled}
       schema={
         isOwner
           ? {
@@ -264,10 +275,11 @@ function ContactForm({ isOwner, goBack, value, onChange, onSubmit }) {
   );
 }
 
-function ImageForm({ goBack, value, onChange, onSubmit }) {
+function ImageForm({ disabled, goBack, value, onChange, onSubmit }) {
   return (
     <div className={styles.imageForm}>
       <StepForm
+        disabled={disabled}
         heading="Add a photo or two."
         schema={imageSchema}
         step={steps.IMAGE}
@@ -302,6 +314,7 @@ function StepForm({
   step,
   schema,
   heading,
+  disabled,
   ...props
 }) {
   const form = useRef(null);
@@ -326,6 +339,7 @@ function StepForm({
       step={step}
       goBack={goBack}
       heading={heading}
+      disabled={disabled}
       {...props}
     >
       {children}
@@ -334,7 +348,16 @@ function StepForm({
 }
 
 const SubForm = forwardRef(function SubForm(
-  { children, className, heading, subheading, step, goBack, ...formProps },
+  {
+    children,
+    disabled,
+    className,
+    heading,
+    subheading,
+    step,
+    goBack,
+    ...formProps
+  },
   ref,
 ) {
   return (
@@ -365,6 +388,7 @@ const SubForm = forwardRef(function SubForm(
           className={cx(styles.submit, {
             [styles.actuallySubmit]: step === lastStep,
           })}
+          disabled={disabled}
         >
           {step === lastStep ? "Submit." : "Next >"}
         </Button>
