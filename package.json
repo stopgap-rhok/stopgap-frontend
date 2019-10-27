@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "classnames": "^2.2.6",
     "easy-peasy": "^3.1.0",
+    "normalize.css": "^8.0.1",
     "react": "^16.11.0",
     "react-device-detect": "^1.9.10",
     "react-dom": "^16.11.0",

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, forwardRef } from "react";
-
+import cx from "classnames";
 import {
   Schema,
   Form as RForm,
@@ -103,7 +103,6 @@ export default function Form({ onSubmit }) {
   }
 
   function next(currentStep) {
-    console.log("hello", currentStep, firstStep, lastStep);
     if (currentStep === lastStep) {
       onSubmit(state);
     } else {
@@ -117,9 +116,6 @@ export default function Form({ onSubmit }) {
 
   return (
     <>
-      <pre>
-        <code>{JSON.stringify(state, null, 2)}</code>
-      </pre>
       {step === steps.ENVIRONMENT_INFO && (
         <EnvironmentInfoForm
           value={state.environment}
@@ -164,13 +160,21 @@ export default function Form({ onSubmit }) {
   );
 }
 
-function YesOrNo({ children, ...props }) {
+function YesOrNo({ children, className, ...props }) {
   return (
     <FormGroup>
-      {children}
-      <FormControl accepter={RadioGroup} {...props}>
-        <Radio value={true}>Yes</Radio>
-        <Radio value={false}>No</Radio>
+      <p className={styles.question}>{children}</p>
+      <FormControl
+        className={cx(className, styles.radioGroup)}
+        accepter={RadioGroup}
+        {...props}
+      >
+        <Radio className={styles.radio} value={true}>
+          Yes.
+        </Radio>
+        <Radio className={styles.radio} value={false}>
+          No.
+        </Radio>
       </FormControl>
     </FormGroup>
   );
@@ -185,7 +189,7 @@ function EnvironmentInfoForm({ goBack, value, onChange, onSubmit }) {
       onSubmit={onSubmit}
       step={steps.ENVIRONMENT_INFO}
       goBack={goBack}
-      heading="Environment stuff"
+      heading="Tell us about an Ottawa business that could use a StopGap ramp."
     >
       <YesOrNo name="singleStep">
         Is the location inaccessible due to a single step?
@@ -204,17 +208,18 @@ function BusinessInfoForm({ goBack, value, onChange, onSubmit }) {
       onSubmit={onSubmit}
       step={steps.BUSINESS_INFO}
       goBack={goBack}
-      heading="Business Information"
+      heading="Where would you like a ramp?"
+      subheading="* mandatory"
     >
       <FormGroup>
-        <ControlLabel>
-          Business name
+        <ControlLabel className={styles.label}>
+          Business name *
           <FormControl name="name" />
         </ControlLabel>
       </FormGroup>
       <FormGroup>
-        <ControlLabel>
-          Address
+        <ControlLabel className={styles.label}>
+          Address *
           <FormControl name="address" />
         </ControlLabel>
       </FormGroup>
@@ -225,21 +230,23 @@ function BusinessInfoForm({ goBack, value, onChange, onSubmit }) {
 
 function AdditionalInfoForm({ goBack, value, onChange, onSubmit }) {
   return (
-    <StepForm
-      schema={additionInfoSchema}
-      value={value}
-      onChange={onChange}
-      onSubmit={onSubmit}
-      step={steps.ADDITIONAL_INFO}
-      goBack={goBack}
-      heading="Additional Information"
-    >
-      <YesOrNo name="sidewalkFlat">Is the sidewalk flat?</YesOrNo>
-      <YesOrNo name="stepIsWide">Is the step 34 inches or wider?</YesOrNo>
-      <YesOrNo name="correctHeight">
-        Is the step taller than 2 inches and shorter than 9 inches?
-      </YesOrNo>
-    </StepForm>
+    <div className={styles.additionInfo}>
+      <StepForm
+        schema={additionInfoSchema}
+        value={value}
+        onChange={onChange}
+        onSubmit={onSubmit}
+        step={steps.ADDITIONAL_INFO}
+        goBack={goBack}
+        heading="Give us some extra information."
+      >
+        <YesOrNo name="sidewalkFlat">Is the sidewalk flat?</YesOrNo>
+        <YesOrNo name="stepIsWide">Is the step 34 inches or wider?</YesOrNo>
+        <YesOrNo name="correctHeight">
+          Is the step taller than 2 inches and shorter than 9 inches?
+        </YesOrNo>
+      </StepForm>
+    </div>
   );
 }
 
@@ -306,6 +313,7 @@ function StepForm({
   step,
   schema,
   heading,
+  ...props
 }) {
   const form = useRef(null);
   const schemuh = useMemo(() => Schema.Model(schema), [schema]);
@@ -329,6 +337,7 @@ function StepForm({
       step={step}
       goBack={goBack}
       heading={heading}
+      {...props}
     >
       {children}
     </SubForm>
@@ -336,12 +345,17 @@ function StepForm({
 }
 
 const SubForm = forwardRef(function SubForm(
-  { children, heading, step, goBack, ...formProps },
+  { children, className, heading, subheading, step, goBack, ...formProps },
   ref,
 ) {
   return (
-    <RForm ref={ref} {...formProps}>
-      <h2>{heading}</h2>
+    <RForm ref={ref} className={cx(styles.container, className)} {...formProps}>
+      <h2 className={styles.heading}>
+        {heading}
+        {subheading && (
+          <small className={styles.subheading}>{subheading}</small>
+        )}
+      </h2>
       {children}
       <div className={styles.buttonContainer}>
         {step !== firstStep && (
@@ -350,8 +364,9 @@ const SubForm = forwardRef(function SubForm(
             size="lg"
             type="button"
             onClick={() => goBack(step)}
+            className={styles.navbutton}
           >
-            Back
+            &lt; Back
           </Button>
         )}
         <Button
@@ -360,7 +375,7 @@ const SubForm = forwardRef(function SubForm(
           type="submit"
           className={styles.submit}
         >
-          {step === lastStep ? "Submit" : "Next"}
+          {step === lastStep ? "Submit" : "Next >"}
         </Button>
       </div>
     </RForm>
