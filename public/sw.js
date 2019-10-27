@@ -1,8 +1,6 @@
 self.importScripts("idb.js");
 
 self.addEventListener("sync", function(event) {
-  console.log("here1");
-  console.log(event.tag);
   if (event.tag === "sendReports") {
     event.waitUntil(
       getDB().then(function(db) {

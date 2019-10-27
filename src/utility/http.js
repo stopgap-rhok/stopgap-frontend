@@ -21,7 +21,6 @@ export async function fetch(url, options, body) {
       return await response.json();
     }
   } catch (e) {
-    console.log("herer");
     getDB().then(function(db) {
       var transaction = db.transaction("outbox", "readwrite");
       return transaction.objectStore("outbox").put({
