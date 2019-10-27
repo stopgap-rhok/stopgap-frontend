@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { get } from "../../utility/http";
 
 import { Container, Content, Table } from "rsuite";
-import "rsuite/dist/styles/rsuite-default.css";
 
 const { Column, HeaderCell, Cell } = Table;
 const boolCell = ({ rowData, dataKey, ...props }) => (
@@ -20,6 +19,7 @@ class Query extends Component {
   }
 
   async componentWillMount() {
+    await import("rsuite/dist/styles/rsuite-default.css");
     this.setState({
       QueryData: await get(
         "https://us-east4-rhok11-stopgap.cloudfunctions.net/getAllRampRequests",
