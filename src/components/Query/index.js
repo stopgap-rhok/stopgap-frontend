@@ -106,7 +106,7 @@ class Query extends Component {
                     });
                     this.setState(state => ({
                       QueryData: state.QueryData.filter(
-                        ({ requestId }) => requestId !== id,
+                        ({ request: { requestId } }) => requestId !== id,
                       ),
                     }));
                   };
