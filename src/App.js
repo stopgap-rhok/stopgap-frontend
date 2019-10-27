@@ -12,7 +12,17 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route exact path="/query" render={() => <div />} />
-          <Route render={() => <Form onSubmit={submitReport} />} />
+          <Route exact path="/thanks" render={() => <div>Thanks.</div>} />
+          <Route
+            render={({ history }) => (
+              <Form
+                onSubmit={async stuff => {
+                  await submitReport(stuff);
+                  history.push("/thanks");
+                }}
+              />
+            )}
+          />
         </Switch>
       </BrowserRouter>
     </main>
