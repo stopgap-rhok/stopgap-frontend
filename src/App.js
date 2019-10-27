@@ -1,24 +1,22 @@
 import React from "react";
-import { Container, Header, Content } from "rsuite";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 
-import StoreProvider from "./store";
 import Form from "./components/Form";
 import Query from "./components/Query";
 import { submitReport } from "./api";
 
-import "rsuite/dist/styles/rsuite-default.css";
 import styles from "./css/App.module.scss";
 
 function App() {
   return (
-    <StoreProvider>
-      <Container>
-        <Header className={styles.header}>
-          <h1 className={styles.heading}>StopGap</h1>
-        </Header>
-        <Query />
-      </Container>
-    </StoreProvider>
+    <main className={styles.main}>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/query" component={Query} />
+          <Route render={() => <Form onSubmit={submitReport} />} />
+        </Switch>
+      </BrowserRouter>
+    </main>
   );
 }
 

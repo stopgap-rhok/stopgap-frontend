@@ -1,18 +1,8 @@
 @import "src/css/index.scss";
 
-.header {
-  padding: 1em 2em;
-  background-color: adjust-color(purple, $saturation: -75%);
-  color: #ffffffed;
-}
-
-.heading {
-  margin: 0;
-}
-
-.body {
-  margin: 0 auto;
-  padding: 1em;
-  min-width: 30rem;
-  max-width: 50rem;
+.main {
+  background-color: white;
+  padding: 1.25em;
+  width: 100vw;
+  height: 100vh;
 }

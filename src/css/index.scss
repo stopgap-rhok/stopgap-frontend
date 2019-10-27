@@ -1,5 +1,41 @@
-@import-normalize;
+* {
+  box-sizing: border-box;
+}
 
 body {
+  font-family: "Work Sans", sans-serif;
   font-size: 16px;
+}
+
+$font-size: (
+  normal: 1rem,
+  medium: 1.2rem,
+  large: 1.44rem,
+);
+
+$font-weight: (
+  bold: 700,
+  normal: 400,
+);
+
+@mixin heading {
+  font-weight: map-get($font-weight, bold);
+  font-size: map-get($font-size, large);
+  line-height: 1.17;
+}
+
+@mixin paragraph($size: normal, $weight: normal) {
+  font-weight: map-get($font-weight, $weight);
+  font-size: map-get($font-size, $size);
+  line-height: 1.2;
+}
+
+@mixin visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
 }
