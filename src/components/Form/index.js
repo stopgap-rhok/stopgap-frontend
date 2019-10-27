@@ -150,6 +150,7 @@ export default function Form({ onSubmit }) {
       )}
       {step === steps.CONTACT_INFO && (
         <ContactForm
+          isOwner={state.business.userIsOwner}
           value={state.contact}
           onChange={updater("contact")}
           onSubmit={next}
@@ -253,13 +254,27 @@ function AdditionalInfoForm({ goBack, value, onChange, onSubmit }) {
 function ContactForm({ isOwner, goBack, value, onChange, onSubmit }) {
   return (
     <StepForm
-      schema={contactSchema}
+      schema={
+        isOwner
+          ? {
+              ...contactSchema,
+              email: t
+                .StringType()
+                .isEmail()
+                .isRequired("This field is required"),
+            }
+          : contactSchema
+      }
       value={value}
       onChange={onChange}
       onSubmit={onSubmit}
       step={steps.CONTACT_INFO}
       goBack={goBack}
-      heading="Contact Information"
+      heading={
+        isOwner
+          ? "We'll drop you a line soon."
+          : "Can we contact you about this request?"
+      }
     >
       {isOwner || (
         <YesOrNo name="canContact">
@@ -269,7 +284,7 @@ function ContactForm({ isOwner, goBack, value, onChange, onSubmit }) {
       <FormGroup>
         <ControlLabel>
           Email address
-          <FormControl name="email" />
+          <FormControl name="email" isRequired={isOwner} />
         </ControlLabel>
       </FormGroup>
     </StepForm>
@@ -278,29 +293,30 @@ function ContactForm({ isOwner, goBack, value, onChange, onSubmit }) {
 
 function ImageForm({ goBack, value, onChange, onSubmit }) {
   return (
-    <StepForm
-      heading="IMage"
-      schema={imageSchema}
-      step={steps.IMAGE}
-      onSubmit={onSubmit}
-      onChange={onChange}
-      value={value}
-      goBack={goBack}
-    >
-      <FormControl
-        accepter={Uploader}
-        accept="image/*"
-        listType="picture"
-        multiple
-        name="attachments"
-        autoUpload={false}
-        removable
+    <div className={styles.imageForm}>
+      <StepForm
+        heading="Add a photo or two."
+        schema={imageSchema}
+        step={steps.IMAGE}
+        onSubmit={onSubmit}
+        onChange={onChange}
+        value={value}
+        goBack={goBack}
       >
-        <button type="button">
-          <Icon icon="camera-retro" size="lg" />
-        </button>
-      </FormControl>
-    </StepForm>
+        <p className={styles.imagequestion}>
+          Be sure to show the step and entryway.
+        </p>
+        <FormControl
+          accepter={Uploader}
+          accept="image/*"
+          listType="picture"
+          multiple
+          name="attachments"
+          autoUpload={false}
+          removable
+        ></FormControl>
+      </StepForm>
+    </div>
   );
 }
 
@@ -373,9 +389,11 @@ const SubForm = forwardRef(function SubForm(
           appearance="primary"
           size="lg"
           type="submit"
-          className={styles.submit}
+          className={cx(styles.submit, {
+            [styles.actuallySubmit]: step === lastStep,
+          })}
         >
-          {step === lastStep ? "Submit" : "Next >"}
+          {step === lastStep ? "Submit." : "Next >"}
         </Button>
       </div>
     </RForm>
