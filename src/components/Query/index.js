@@ -1,16 +1,9 @@
 import React, { Component } from "react";
 import { get } from "../../utility/http";
 
-import { Container, Content, Table } from "rsuite";
+import { Button, Container, Content, Table } from "rsuite";
 
 const { Column, HeaderCell, Cell } = Table;
-const boolCell = ({ rowData, dataKey, ...props }) => (
-  <Cell {...props} style={{ padding: 0 }}>
-    <div>
-      <p>{rowData[dataKey]}</p>
-    </div>
-  </Cell>
-);
 
 class Query extends Component {
   constructor(props) {
@@ -54,8 +47,33 @@ class Query extends Component {
             </Column>
 
             <Column width={200}>
-              <HeaderCell>Met Requirements</HeaderCell>
-              <Cell dataKey="request.metRequirements" />
+              <HeaderCell>Non-residential</HeaderCell>
+              <Cell dataKey="request.nonResidential" />
+            </Column>
+
+            <Column width={200}>
+              <HeaderCell>Step is wide</HeaderCell>
+              <Cell dataKey="request.stepIsWide" />
+            </Column>
+
+            <Column width={200}>
+              <HeaderCell>Sidewalk is Flat</HeaderCell>
+              <Cell dataKey="request.sidewalkFlat" />
+            </Column>
+
+            <Column width={200}>
+              <HeaderCell>Step is within acceptable range</HeaderCell>
+              <Cell dataKey="request.correctHeight" />
+            </Column>
+
+            <Column width={200}>
+              <HeaderCell>Attachments</HeaderCell>
+              <Cell dataKey="request.attachments" />
+            </Column>
+
+            <Column width={200}>
+              <HeaderCell>Has single step</HeaderCell>
+              <Cell dataKey="request.singleStep" />
             </Column>
 
             <Column width={200}>
@@ -64,11 +82,13 @@ class Query extends Component {
             </Column>
 
             <Column width={200}>
+              <HeaderCell>Can Contact</HeaderCell>
+              <Cell dataKey="request.canContact" />
+            </Column>
+
+            <Column width={200}>
               <HeaderCell>User Is Owner</HeaderCell>
-              <boolCell
-                dataKey="request.userIsOwner"
-                rowData="request.userIsOwner"
-              />
+              <Cell dataKey="request.userIsOwner" />
             </Column>
 
             <Column width={120}>
@@ -76,14 +96,24 @@ class Query extends Component {
 
               <Cell>
                 {rowData => {
-                  function handleAction() {
-                    alert(`id:${rowData.id}`);
-                  }
+                  const handleAction = async () => {
+                    const id = rowData.request.requestId;
+
+                    const url = `https://us-east4-rhok11-stopgap.cloudfunctions.net/deleteRampRequest?rampRequestId=${id}`;
+                    await window.fetch(url, {
+                      method: "POST",
+                      mode: "no-cors",
+                    });
+                    this.setState(state => ({
+                      QueryData: state.QueryData.filter(
+                        ({ requestId }) => requestId !== id,
+                      ),
+                    }));
+                  };
                   return (
-                    <span>
-                      <a onClick={handleAction}> Edit </a> |{" "}
-                      <a onClick={handleAction}> Remove </a>
-                    </span>
+                    <Button type="button" onClick={handleAction}>
+                      Remove
+                    </Button>
                   );
                 }}
               </Cell>
