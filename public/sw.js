@@ -1,39 +1,5 @@
 self.importScripts("idb.js");
 
-// self.addEventListener("fetch", function(event){
-//     var req = event.request.clone();
-
-//     if(req.method === "POST" && req.url === "https://us-east4-rhok11-stopgap.cloudfunctions.net/uploadRampRequest") {
-//         event.waitUntil(
-//             fetch(req).catch(function(err){
-//                 return getDB().then(function(db){
-//                     var transaction = db.transaction('outbox', 'readwrite');
-//                     const reader = event.request.clone().body.getReader()
-//                     const stream = new ReadableStream({
-//                         start(controller) {
-//                           function push() {
-//                             reader.read().then(({ done, value }) => {
-//                               if (done) {
-//                                 controller.close();
-//                                 return;
-//                               }
-//                               controller.enqueue(value);
-//                               push();
-//                             });
-//                           };
-//                           push();
-//                         }
-//                       });
-//                     return  transaction.objectStore('outbox').put({
-//                             body: stream,
-//                             url: req.url
-//                         });
-//                     })
-//             })
-//         )
-//     }
-// })
-
 self.addEventListener("sync", function(event) {
   console.log("here1");
   console.log(event.tag);
