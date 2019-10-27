@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { get } from "../../utility/http";
 
-import { Table } from "rsuite";
+import { Container, Content, Table } from "rsuite";
+import "rsuite/dist/styles/rsuite-default.css";
 
 const { Column, HeaderCell, Cell } = Table;
 const boolCell = ({ rowData, dataKey, ...props }) => (
@@ -28,66 +29,68 @@ class Query extends Component {
   }
   render() {
     return (
-      <div>
-        <Table
-          height={400}
-          data={this.state.QueryData}
-          onRowClick={data => {
-            console.log(data);
-          }}
-        >
-          <Column width={200}>
-            <HeaderCell>Business Name</HeaderCell>
-            <Cell dataKey="request.businessName" />
-          </Column>
+      <Container>
+        <Content>
+          <Table
+            height={400}
+            data={this.state.QueryData}
+            onRowClick={data => {
+              console.log(data);
+            }}
+          >
+            <Column width={200}>
+              <HeaderCell>Business Name</HeaderCell>
+              <Cell dataKey="request.businessName" />
+            </Column>
 
-          <Column width={200}>
-            <HeaderCell>Business Address</HeaderCell>
-            <Cell dataKey="request.businessAddress" />
-          </Column>
+            <Column width={200}>
+              <HeaderCell>Business Address</HeaderCell>
+              <Cell dataKey="request.businessAddress" />
+            </Column>
 
-          <Column width={200}>
-            <HeaderCell>Business Details</HeaderCell>
-            <Cell dataKey="request.businessDetails" />
-          </Column>
+            <Column width={200}>
+              <HeaderCell>Business Details</HeaderCell>
+              <Cell dataKey="request.businessDetails" />
+            </Column>
 
-          <Column width={200}>
-            <HeaderCell>Met Requirements</HeaderCell>
-            <Cell dataKey="request.metRequirements" />
-          </Column>
+            <Column width={200}>
+              <HeaderCell>Met Requirements</HeaderCell>
+              <Cell dataKey="request.metRequirements" />
+            </Column>
 
-          <Column width={200}>
-            <HeaderCell>User Email</HeaderCell>
-            <Cell dataKey="request.userEmail" />
-          </Column>
+            <Column width={200}>
+              <HeaderCell>User Email</HeaderCell>
+              <Cell dataKey="request.userEmail" />
+            </Column>
 
-          <Column width={200}>
-            <HeaderCell>User Is Owner</HeaderCell>
-            <boolCell
-              dataKey="request.userIsOwner"
-              rowData="request.userIsOwner"
-            />
-          </Column>
+            <Column width={200}>
+              <HeaderCell>User Is Owner</HeaderCell>
+              <boolCell
+                dataKey="request.userIsOwner"
+                rowData="request.userIsOwner"
+              />
+            </Column>
 
-          <Column width={120}>
-            <HeaderCell>Action</HeaderCell>
+            <Column width={120}>
+              <HeaderCell>Action</HeaderCell>
 
-            <Cell>
-              {rowData => {
-                function handleAction() {
-                  alert(`id:${rowData.id}`);
-                }
-                return (
-                  <span>
-                    <a onClick={handleAction}> Edit </a> |{" "}
-                    <a onClick={handleAction}> Remove </a>
-                  </span>
-                );
-              }}
-            </Cell>
-          </Column>
-        </Table>
-      </div>
+              <Cell>
+                {rowData => {
+                  function handleAction() {
+                    alert(`id:${rowData.id}`);
+                  }
+                  return (
+                    <span>
+                      <a onClick={handleAction}> Edit </a> |{" "}
+                      <a onClick={handleAction}> Remove </a>
+                    </span>
+                  );
+                }}
+              </Cell>
+            </Column>
+          </Table>
+        </Content>
+      </Container>
     );
   }
 }
