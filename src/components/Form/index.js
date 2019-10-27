@@ -5,10 +5,7 @@ import {
   Form as RForm,
   FormGroup,
   FormControl,
-  Icon,
   ControlLabel,
-  Checkbox,
-  CheckboxGroup,
   Radio,
   RadioGroup,
   Button,
@@ -44,30 +41,6 @@ const contactSchema = {
   canContact: t.BooleanType().isRequired("This field is required"),
   email: t.StringType().isEmail("Invalid email address"),
 };
-
-const schema = Schema.Model({
-  environment: t
-    .ObjectType()
-    .shape(environmentSchema)
-    .isRequired(),
-  business: t
-    .ObjectType()
-    .shape(businessSchema)
-    .isRequired(),
-  contact: t
-    .ObjectType()
-    .shape(contactSchema)
-    .isRequired(),
-  info: t
-    .ObjectType()
-    .shape(additionInfoSchema)
-    .isRequired(),
-  image: t
-    .ObjectType()
-    .shape(imageSchema)
-    .isRequired(),
-  extraInfo: t.StringType(),
-});
 
 const stepNames = [
   "ENVIRONMENT_INFO",
