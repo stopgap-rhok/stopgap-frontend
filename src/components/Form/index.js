@@ -225,9 +225,9 @@ function AdditionalInfoForm({ disabled, goBack, value, onChange, onSubmit }) {
         heading="Give us some extra information."
       >
         <YesOrNo name="sidewalkFlat">Is the sidewalk flat?</YesOrNo>
-        <YesOrNo name="stepIsWide">Is the step 34 inches or wider?</YesOrNo>
+        <YesOrNo name="stepIsWide">Is the step 86 cm (34 inches) or wider?</YesOrNo>
         <YesOrNo name="correctHeight">
-          Is the step taller than 2 inches and shorter than 9 inches?
+          Is the step between 5 and 23 cm high (2-9 inches)?
         </YesOrNo>
       </StepForm>
     </div>
