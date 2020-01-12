@@ -17,7 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "rm -rf docs/static docs/query && react-scripts build && mv build/* docs && mkdir docs/query && cp docs/index.html docs/query",
-    "build-ws": "rmdir /S /Q docs & react-scripts build && mkdir docs\\query && copy build docs && copy docs\\index.html docs\\query",
+    "build-ws": "rmdir /S /Q docs & react-scripts build && xcopy /E /Y build docs\\ && mkdir docs\\query && xcopy docs\\index.html docs\\query",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
